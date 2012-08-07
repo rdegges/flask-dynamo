@@ -1,0 +1,1 @@
+"""Flask integration for DynamoDB."""
