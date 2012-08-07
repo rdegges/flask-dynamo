@@ -1,3 +1,3 @@
 # flask-dynamo
 
-Flask integratino for DynamoDB.
+Flask integration for DynamoDB.
