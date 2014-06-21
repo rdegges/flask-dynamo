@@ -25,7 +25,7 @@ setup(
     license = 'UNLICENSE',
     url = 'https://github.com/rdegges/flask-dynamo',
     keywords = 'python dynamodb dynamo aws amazon flask web database',
-    description = 'Flask integration for DynamoDB.',
+    description = 'DynamoDB integration for Flask.',
     long_description = open(normpath(join(dirname(abspath(__file__)), 'README.md'))).read()
 
 )
