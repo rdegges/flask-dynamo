@@ -39,6 +39,7 @@ setup(
     description = 'DynamoDB integration for Flask.',
     long_description = __doc__,
 
+    # Classifiers:
     platforms = 'any',
     classifiers = [
         'Environment :: Web Environment',
