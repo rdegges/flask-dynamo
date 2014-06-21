@@ -2,12 +2,14 @@ from os.path import abspath, dirname, join, normpath
 
 from setuptools import setup
 
+from flask_dynamo import __version__ as version
+
 
 setup(
 
     # Basic package information:
     name = 'flask-dynamo',
-    version = '0.1',
+    version = version,
     packages = ('dynamo',),
 
     # Packaging options:
