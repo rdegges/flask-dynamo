@@ -227,7 +227,7 @@ This section covers all library changes and release notes.
 
 ### Version 0.0.1
 
-**Released June 21, 2014.**
+*Released June 21, 2014.*
 
 - First release ever, woo!
 
