@@ -220,6 +220,18 @@ you found a bug or have a feature request, please use the [issue tracker][].
 Thanks!  &lt;3333
 
 
+## Changes
+
+This section covers all library changes and release notes.
+
+
+### 0.0.1
+
+**Released June 21, 2014.**
+
+- First release ever, woo!
+
+
   [Dragon Sketch]: https://github.com/rdegges/flask-dynamo/raw/master/assets/dragon-sketch.jpg "Dragon Sketch"
   [DynamoDB]: http://aws.amazon.com/dynamodb/ "DynamoDB"
   [pip]: http://pip.readthedocs.org/en/latest/ "pip"
