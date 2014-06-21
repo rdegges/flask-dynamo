@@ -1,4 +1,15 @@
-from os.path import abspath, dirname, join, normpath
+"""
+flask-dynamo
+~~~~~~~~~~~~
+
+DynamoDB integration for Flask!
+
+Please visit this project's GitHub page to view all docs:
+https://github.com/rdegges/flask-dynamo
+
+-Randall
+"""
+
 
 from setuptools import setup
 
@@ -26,6 +37,6 @@ setup(
     url = 'https://github.com/rdegges/flask-dynamo',
     keywords = 'python dynamodb dynamo aws amazon flask web database',
     description = 'DynamoDB integration for Flask.',
-    long_description = open(normpath(join(dirname(abspath(__file__)), 'README.md'))).read()
+    long_description = __doc__,
 
 )
