@@ -10,7 +10,7 @@ setup(
     # Basic package information:
     name = 'flask-dynamo',
     version = version,
-    packages = ('dynamo',),
+    packages = ['flask_dynamo'],
 
     # Packaging options:
     zip_safe = False,
