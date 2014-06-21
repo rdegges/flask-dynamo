@@ -225,7 +225,7 @@ Thanks!  &lt;3333
 This section covers all library changes and release notes.
 
 
-### 0.0.1
+### Version 0.0.1
 
 **Released June 21, 2014.**
 
