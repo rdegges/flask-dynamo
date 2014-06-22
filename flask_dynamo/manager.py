@@ -15,6 +15,8 @@ from .errors import ConfigurationError
 class Dynamo(object):
     """DynamoDB wrapper for Flask."""
 
+    DEFAULT_REGION = 'us-east-1'
+
     def __init__(self, app=None):
         """
         Initialize this extension.
@@ -39,7 +41,7 @@ class Dynamo(object):
         self.app.config.setdefault('DYNAMO_TABLES', [])
         self.app.config.setdefault('AWS_ACCESS_KEY_ID', environ.get('AWS_ACCESS_KEY_ID'))
         self.app.config.setdefault('AWS_SECRET_ACCESS_KEY', environ.get('AWS_SECRET_ACCESS_KEY'))
-        self.app.config.setdefault('AWS_REGION', environ.get('AWS_REGION', 'us-east-1'))
+        self.app.config.setdefault('AWS_REGION', environ.get('AWS_REGION', self.DEFAULT_REGION))
 
     def check_settings(self):
         """
