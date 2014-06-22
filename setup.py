@@ -11,7 +11,6 @@ https://github.com/rdegges/flask-dynamo
 """
 
 
-from multiprocessing import cpu_count
 from subprocess import call
 
 from setuptools import Command, setup
@@ -32,7 +31,7 @@ class RunTests(Command):
 
     def run(self):
         """Run all tests!"""
-        errno = call(['py.test', '-n', str(cpu_count())])
+        errno = call(['py.test'])
         raise SystemExit(errno)
 
 
