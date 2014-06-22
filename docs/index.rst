@@ -17,7 +17,6 @@ flask-dynamo.  If you're a new flask-dynamo user, start here!
 .. toctree::
    :maxdepth: 2
 
-   setup
    quickstart
    help
 
