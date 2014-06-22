@@ -14,7 +14,7 @@
 
 
 from os.path import abspath
-from sys.path import append
+from sys import path
 
 from flask.ext.dynamo import __version__ as version
 
@@ -22,7 +22,7 @@ from flask.ext.dynamo import __version__ as version
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-append(abspath('_themes'))
+path.append(abspath('_themes'))
 
 # -- General configuration ------------------------------------------------
 
