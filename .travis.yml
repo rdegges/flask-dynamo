@@ -7,7 +7,7 @@ install:
   - python setup.py develop
 script:
   - python setup.py test
-  #- cd docs && make html
+  - cd docs && make html
 env:
   global:
   - secure: "Lt0DLSvIV2lzul1Z3/eusQ5WMUlUqWQPNclELkN+Dtn51KAm105ZuLJMjyCb5Aq/Fr1plKTEJm+faeyIX2PkmnxUYcfXsFuG4SfM+SZzPPfXndWuPqaa+k/LkcTAtwm/WBtvFmBjwumUhLGdQgDIE9mmQ7TBiF8zt89ySQCejb4="
