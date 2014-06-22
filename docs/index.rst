@@ -19,6 +19,7 @@ flask-dynamo.  If you're a new flask-dynamo user, start here!
 
    quickstart
    help
+   contributing
 
 
 API Reference
