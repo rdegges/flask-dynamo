@@ -1,2 +1,4 @@
 include README.md UNLICENSE
 recursive-include assets *.jpg
+recursive-include docs *
+recursive-exclude docs/_build *
