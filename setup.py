@@ -11,9 +11,29 @@ https://github.com/rdegges/flask-dynamo
 """
 
 
-from setuptools import setup
+from multiprocessing import cpu_count
+from subprocess import call
+
+from setuptools import Command, setup
 
 from flask_dynamo import __version__ as version
+
+
+class RunTests(Command):
+    """Run all tests."""
+    description = 'run tests'
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        """Run all tests!"""
+        errno = call(['py.test', '-n', str(cpu_count())])
+        raise SystemExit(errno)
 
 
 setup(
@@ -62,5 +82,8 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
+
+    # Test helper:
+    cmdclass = {'test': RunTests},
 
 )
