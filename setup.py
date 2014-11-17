@@ -15,7 +15,8 @@ from subprocess import call
 
 from setuptools import Command, setup
 
-from flask_dynamo import __version__ as version
+
+VERSION = '0.0.2'
 
 
 class RunTests(Command):
@@ -39,7 +40,7 @@ setup(
 
     # Basic package information:
     name = 'flask-dynamo',
-    version = version,
+    version = VERSION,
     packages = ['flask_dynamo'],
 
     # Packaging options:
