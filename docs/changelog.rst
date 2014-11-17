@@ -7,6 +7,15 @@ Change Log
 All library changes, in descending order.
 
 
+Version 0.0.3
+-------------
+
+**Released on November 17, 2014.**
+
+- Fixing packaging issues with import ordering.  Thanks @alastair for the
+  report!
+
+
 Version 0.0.2
 -------------
 
