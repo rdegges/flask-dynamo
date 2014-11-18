@@ -11,6 +11,7 @@ from boto.dynamodb2.layer1 import DynamoDBConnection
 from boto.dynamodb2.table import Table
 from flask import Flask
 from flask.ext.dynamo import Dynamo
+from flask.ext.dynamo.errors import ConfigurationError
 
 
 class DynamoTest(TestCase):
@@ -42,6 +43,24 @@ class DynamoTest(TestCase):
         self.assertEqual(self.app.config['AWS_ACCESS_KEY_ID'], environ.get('AWS_ACCESS_KEY_ID'))
         self.assertEqual(self.app.config['AWS_SECRET_ACCESS_KEY'], environ.get('AWS_SECRET_ACCESS_KEY'))
         self.assertEqual(self.app.config['AWS_REGION'], environ.get('AWS_REGION') or self.dynamo.DEFAULT_REGION)
+
+        # Test DynamoDB local settings.
+        app = Flask(__name__)
+        app.config['DEBUG'] = True
+        app.config['DYNAMO_TABLES'] = [
+            Table('%s-phones' % self.prefix, schema=[HashKey('number')]),
+            Table('%s-users' % self.prefix, schema=[HashKey('username')]),
+        ]
+        app.config['DYNAMO_ENABLE_LOCAL'] = True
+
+        self.assertRaises(ConfigurationError, Dynamo, app)
+
+        app.config['DYNAMO_LOCAL_HOST'] = 'localhost'
+
+        self.assertRaises(ConfigurationError, Dynamo, app)
+
+        app.config['DYNAMO_LOCAL_PORT'] = 8000
+        self.assertIsInstance(Dynamo(app), object)
 
     def test_connection(self):
         with self.app.app_context():
