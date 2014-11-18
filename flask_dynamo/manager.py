@@ -74,11 +74,21 @@ class Dynamo(object):
         ctx = stack.top
         if ctx is not None:
             if not hasattr(ctx, 'dynamo_connection'):
-                ctx.dynamo_connection = connect_to_region(
-                    self.app.config['AWS_REGION'],
-                    aws_access_key_id = self.app.config['AWS_ACCESS_KEY_ID'],
-                    aws_secret_access_key = self.app.config['AWS_SECRET_ACCESS_KEY'],
-                )
+                kwargs = {
+                    'aws_access_key_id': self.app.config['AWS_ACCESS_KEY_ID'],
+                    'aws_secret_access_key': self.app.config['AWS_SECRET_ACCESS_KEY'],
+                    'host': self.app.config['DYNAMO_LOCAL_HOST'] if self.app.config['DYNAMO_ENABLE_LOCAL'] else None,
+                    'port': int(self.app.config['DYNAMO_LOCAL_PORT']) if self.app.config['DYNAMO_ENABLE_LOCAL'] else None,
+                    'is_secure': False if self.app.config['DYNAMO_ENABLE_LOCAL'] else True,
+                }
+
+                # If DynamoDB local is disabled, we'll remove these settings.
+                if not kwargs['host']:
+                    del kwargs['host']
+                if not kwargs['port']:
+                    del kwargs['port']
+
+                ctx.dynamo_connection = connect_to_region(self.app.config['AWS_REGION'], **kwargs)
 
             return ctx.dynamo_connection
 
