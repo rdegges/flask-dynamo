@@ -7,6 +7,14 @@ Change Log
 All library changes, in descending order.
 
 
+Version 0.0.4
+-------------
+
+**Released on November 17, 2014.**
+
+- Adding support for DynamoDB Local!
+
+
 Version 0.0.3
 -------------
 
