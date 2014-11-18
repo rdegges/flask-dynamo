@@ -60,6 +60,9 @@ class Dynamo(object):
         if not (self.app.config['AWS_ACCESS_KEY_ID'] and self.app.config['AWS_SECRET_ACCESS_KEY']):
             raise ConfigurationError('You must specify your AWS credentials.')
 
+        if self.app.config['DYNAMO_ENABLE_LOCAL'] and not (self.app.config['DYNAMO_LOCAL_HOST'] and self.app.config['DYNAMO_LOCAL_PORT']):
+            raise ConfigurationError('If you have enabled Dynamo local, you must specify the host and port.')
+
     @property
     def connection(self):
         """
