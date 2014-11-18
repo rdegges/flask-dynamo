@@ -36,9 +36,12 @@ The required environment variables are:
 - ``AWS_ACCESS_KEY_ID`` (*your Amazon access key ID*)
 - ``AWS_SECRET_ACCESS_KEY`` (*your Amazon secret access key*)
 
-There is also an optional variable you can set:
+There are also optional variables you can set:
 
 - ``AWS_REGION`` (*defaults to us-east-1*)
+- ``DYNAMO_ENABLE_LOCAL`` (*defaults to False*)
+- ``DYNAMO_LOCAL_HOST`` (*defaults to None*)
+- ``DYNAMO_LOCAL_PORT`` (*defaults to None*)
 
 These credentials can be grabbed from your `AWS Console`_.
 
@@ -190,7 +193,37 @@ The below code snippet will destroy all of your predefined DynamoDB tables::
     completely destroy your application's data!
 
 
+Using DynamoDB Local
+--------------------
+
+If you'd like to use a local DynamoDB instance, flask-dynamo can help you.  The
+only change you need to make is to your configuration.  By specifying a few
+extra configuration variables, you'll be able to connect to your local DynamoDB
+instance as opposed to the 'real' AWS cloud service -- this is great for testing
+things out.
+
+For more information about DynamoDB local, read the official `DynamoDB Local
+documentation`_.
+
+The settings you need to set are:
+
+- ``DYNAMO_ENABLE_LOCAL`` - Set this to ``True``.
+- ``DYNAMO_LOCAL_HOST`` - Set this to your local DB hostname -- usually
+  ``'localhost'``.
+- ``DYNAMO_LOCAL_PORT`` - Set this to your local DB port -- usually ``8000``.
+
+The settings above can be specified in one of two ways, either via environment
+variables, or via application configuration options directly, eg:
+
+    app.config['DYNAMO_ENABLE_LOCAL'] = True
+    app.config['DYNAMO_LOCAL_HOST'] = 'localhost'
+    app.config['DYNAMO_LOCAL_PORT'] = 8000
+
+No other code needs to be changed in order to use DynamoDB Local.
+
+
 .. _pip: http://pip.readthedocs.org/en/latest/
 .. _AWS Console: https://console.aws.amazon.com/iam/home?#security_credential
 .. _StackOverflow question: http://stackoverflow.com/questions/5971312/how-to-set-environment-variables-in-python
 .. _boto DynamoDB tutorial: http://boto.readthedocs.org/en/latest/dynamodb2_tut.html
+.. _DynamoDB Local documentation: http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Tools.DynamoDBLocal.html
