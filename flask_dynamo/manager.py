@@ -80,7 +80,7 @@ class Dynamo(object):
                         host=self.app.config['DYNAMO_LOCAL_HOST'],
                         port=self.app.config['DYNAMO_LOCAL_PORT'],
                         aws_access_key_id=self.app.config['AWS_ACCESS_KEY_ID'] or 'flask-dynamo-fakekey',
-                        aws_secret_access_key='fakesecret',
+                        aws_secret_access_key=self.app.config['AWS_SECRET_ACCESS_KEY'] or 'fakesecret',
                         is_secure=False
                     )
                 else:

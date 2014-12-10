@@ -5,6 +5,7 @@ from os import environ
 from time import sleep
 from unittest import TestCase
 from uuid import uuid4
+from mock import patch
 
 from boto.dynamodb2.fields import HashKey
 from boto.dynamodb2.layer1 import DynamoDBConnection
@@ -14,8 +15,56 @@ from flask.ext.dynamo import Dynamo
 from flask.ext.dynamo.errors import ConfigurationError
 
 
-class DynamoTest(TestCase):
-    """Test our Dynamo extension."""
+class DynamoUnitTest(TestCase):
+    """ Unit level tests for the Dynamo extensions, don't actually connect to dynamo.
+    """
+    @patch('flask_dynamo.manager.DynamoDBConnection')
+    def test_connect_locally(self, connection_mock):
+
+        # set minimal params for local connection
+        app = Flask(__name__)
+        app.config['DYNAMO_TABLES'] = ['Fake Table']
+        app.config['AWS_ACCESS_KEY_ID'] = 'testkey'
+        app.config['AWS_SECRET_ACCESS_KEY'] = 'testsecret'
+        app.config['DYNAMO_ENABLE_LOCAL'] = True
+        app.config['DYNAMO_LOCAL_HOST'] = 'localhost'
+        app.config['DYNAMO_LOCAL_PORT'] = 1234
+
+        dynamo = Dynamo(app)
+        with app.app_context():
+            connection = dynamo.connection
+        connection_mock.assert_called_once_with(
+                aws_access_key_id='testkey',
+                aws_secret_access_key='testsecret',
+                host='localhost',
+                port=1234,
+                is_secure=False)
+        self.assertEqual(connection.__class__.__name__, 'MagicMock')
+
+    @patch('flask_dynamo.manager.connect_to_region')
+    def test_connect_to_region(self, connect_to_region_mock):
+        # connect_to_region_mock.return_value = None
+        # set minimal params for local connection
+        app = Flask(__name__)
+        app.config['DYNAMO_TABLES'] = ['Fake Table']
+        app.config['AWS_ACCESS_KEY_ID'] = 'testkey'
+        app.config['AWS_SECRET_ACCESS_KEY'] = 'testsecret'
+
+        dynamo = Dynamo(app)
+        with app.app_context():
+            connection = dynamo.connection
+        connect_to_region_mock.assert_called_once_with(
+                Dynamo.DEFAULT_REGION,
+                aws_access_key_id='testkey',
+                aws_secret_access_key='testsecret',
+                is_secure=True)
+        self.assertEqual(connection.__class__.__name__, 'MagicMock')
+
+
+class DynamoIntegrationTest(TestCase):
+    """Test our Dynamo extension end to end.
+    Actually connects to DynamoDB so requires credentials set in environment
+    """
 
     def setUp(self):
         """
