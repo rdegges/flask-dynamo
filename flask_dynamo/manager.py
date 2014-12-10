@@ -89,7 +89,7 @@ class Dynamo(object):
                     if self.app.config['AWS_ACCESS_KEY_ID']:
                         kwargs['aws_access_key_id'] = self.app.config['AWS_ACCESS_KEY_ID']
                     if self.app.config['AWS_SECRET_ACCESS_KEY']:
-                        kwargs['aws_access_key_id'] = self.app.config['AWS_SECRET_ACCESS_KEY']
+                        kwargs['aws_secret_access_key'] = self.app.config['AWS_SECRET_ACCESS_KEY']
                     ctx.dynamo_connection = connect_to_region(self.app.config['AWS_REGION'], **kwargs)
 
             return ctx.dynamo_connection
