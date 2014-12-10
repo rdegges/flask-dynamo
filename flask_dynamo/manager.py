@@ -3,6 +3,7 @@
 
 from os import environ
 
+from boto.dynamodb2.layer1 import DynamoDBConnection
 from boto.dynamodb2 import connect_to_region
 from boto.dynamodb2.table import Table
 from flask import (
@@ -74,23 +75,27 @@ class Dynamo(object):
         ctx = stack.top
         if ctx is not None:
             if not hasattr(ctx, 'dynamo_connection'):
-                kwargs = {
-                    'aws_access_key_id': self.app.config['AWS_ACCESS_KEY_ID'],
-                    'aws_secret_access_key': self.app.config['AWS_SECRET_ACCESS_KEY'],
-                    'host': self.app.config['DYNAMO_LOCAL_HOST'] if self.app.config['DYNAMO_ENABLE_LOCAL'] else None,
-                    'port': int(self.app.config['DYNAMO_LOCAL_PORT']) if self.app.config['DYNAMO_ENABLE_LOCAL'] else None,
-                    'is_secure': False if self.app.config['DYNAMO_ENABLE_LOCAL'] else True,
-                }
-
-                # If DynamoDB local is disabled, we'll remove these settings.
-                if not kwargs['host']:
-                    del kwargs['host']
-                if not kwargs['port']:
-                    del kwargs['port']
-
-                ctx.dynamo_connection = connect_to_region(self.app.config['AWS_REGION'], **kwargs)
+                if self.app.config['DYNAMO_ENABLE_LOCAL']:
+                    ctx.dynamo_connection = DynamoDBConnection(
+                        host=self.app.config['DYNAMO_LOCAL_HOST'],
+                        port=self.app.config['DYNAMO_LOCAL_PORT'],
+                        aws_access_key_id=self.app.config['AWS_ACCESS_KEY_ID'] or 'flask-dynamo-fakekey',
+                        aws_secret_access_key=self.app.config['AWS_SECRET_ACCESS_KEY'] or 'fakesecret',
+                        is_secure=False
+                    )
+                else:
+                    kwargs = {}
+                    kwargs['is_secure'] = True
+                    if self.app.config['AWS_ACCESS_KEY_ID']:
+                        kwargs['aws_access_key_id'] = self.app.config['AWS_ACCESS_KEY_ID']
+                    if self.app.config['AWS_SECRET_ACCESS_KEY']:
+                        kwargs['aws_secret_access_key'] = self.app.config['AWS_SECRET_ACCESS_KEY']
+                    ctx.dynamo_connection = connect_to_region(self.app.config['AWS_REGION'], **kwargs)
 
             return ctx.dynamo_connection
+
+
+
 
     @property
     def tables(self):
