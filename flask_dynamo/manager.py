@@ -156,3 +156,4 @@ class Dynamo(object):
         """
         for table_name, table in self.tables.iteritems():
             table.delete()
+
