@@ -11,6 +11,9 @@ from flask import (
 
 from .errors import ConfigurationError
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Dynamo(object):
     """DynamoDB wrapper for Flask."""
@@ -57,8 +60,16 @@ class Dynamo(object):
         if not self.app.config['DYNAMO_TABLES']:
             raise ConfigurationError('You must specify at least one Dynamo table to use.')
 
-        if not (self.app.config['AWS_ACCESS_KEY_ID'] and self.app.config['AWS_SECRET_ACCESS_KEY']):
-            raise ConfigurationError('You must specify your AWS credentials.')
+        if not self.app.config['AWS_ACCESS_KEY_ID'] and not self.app.config['AWS_SECRET_ACCESS_KEY']:
+            logger.warning('No AWS credentials specified; continuing in the hope '
+                    'that the boto default credentials provider finds an ec2 '
+                    'instance profile.')
+
+        if self.app.config['AWS_ACCESS_KEY_ID'] and not self.app.config['AWS_SECRET_ACCESS_KEY']:
+            raise ConfigurationError('You must specify AWS_SECRET_ACCESS_KEY if you are specifying AWS_ACCESS_KEY_ID.')
+
+        if self.app.config['AWS_SECRET_ACCESS_KEY'] and not self.app.config['AWS_ACCESS_KEY_ID']:
+            raise ConfigurationError('You must specify AWS_ACCESS_KEY_ID if you are specifying AWS_SECRET_ACCESS_KEY.')
 
         if self.app.config['DYNAMO_ENABLE_LOCAL'] and not (self.app.config['DYNAMO_LOCAL_HOST'] and self.app.config['DYNAMO_LOCAL_PORT']):
             raise ConfigurationError('If you have enabled Dynamo local, you must specify the host and port.')
@@ -75,12 +86,17 @@ class Dynamo(object):
         if ctx is not None:
             if not hasattr(ctx, 'dynamo_connection'):
                 kwargs = {
-                    'aws_access_key_id': self.app.config['AWS_ACCESS_KEY_ID'],
-                    'aws_secret_access_key': self.app.config['AWS_SECRET_ACCESS_KEY'],
                     'host': self.app.config['DYNAMO_LOCAL_HOST'] if self.app.config['DYNAMO_ENABLE_LOCAL'] else None,
                     'port': int(self.app.config['DYNAMO_LOCAL_PORT']) if self.app.config['DYNAMO_ENABLE_LOCAL'] else None,
                     'is_secure': False if self.app.config['DYNAMO_ENABLE_LOCAL'] else True,
                 }
+
+                # only apply if manually specified; otherwise let boto figure it out
+                # (boto will sniff for ec2 instance profile credentials)
+                if self.app.config['AWS_ACCESS_KEY_ID']:
+                  kwargs['aws_access_key_id'] = self.app.config['AWS_ACCESS_KEY_ID']
+                if self.app.config['AWS_SECRET_ACCESS_KEY']:
+                  kwargs['aws_secret_access_key'] = self.app.config['AWS_SECRET_ACCESS_KEY']
 
                 # If DynamoDB local is disabled, we'll remove these settings.
                 if not kwargs['host']:
