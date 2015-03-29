@@ -7,6 +7,16 @@ Change Log
 All library changes, in descending order.
 
 
+Version 0.0.5
+-------------
+
+**Released on March 29, 2015.**
+
+- Merging PR for improved environment variable detection using boto.  We'll now
+  allow the user to configure Flask-Dynamo through all of the standard boto
+  methods.
+
+
 Version 0.0.4
 -------------
 
