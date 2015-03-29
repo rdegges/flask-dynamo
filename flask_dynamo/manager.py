@@ -54,9 +54,6 @@ class Dynamo(object):
 
         :raises: ConfigurationError
         """
-        if not self.app.config['DYNAMO_TABLES']:
-            raise ConfigurationError('You must specify at least one Dynamo table to use.')
-
         if self.app.config['AWS_ACCESS_KEY_ID'] and not self.app.config['AWS_SECRET_ACCESS_KEY']:
             raise ConfigurationError('You must specify AWS_SECRET_ACCESS_KEY if you are specifying AWS_ACCESS_KEY_ID.')
 
