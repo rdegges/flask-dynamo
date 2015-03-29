@@ -7,6 +7,15 @@ Change Log
 All library changes, in descending order.
 
 
+Version 0.0.6
+-------------
+
+**Released on March 29, 2015.**
+
+- Allowing users to specify ``DYNAMO_TABLES`` dynamically =)  This makes it
+  possible to specify your tables dynamically instead of immediately at startup.
+
+
 Version 0.0.5
 -------------
 
