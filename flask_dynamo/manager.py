@@ -11,9 +11,6 @@ from flask import (
 
 from .errors import ConfigurationError
 
-import logging
-
-logger = logging.getLogger(__name__)
 
 class Dynamo(object):
     """DynamoDB wrapper for Flask."""
@@ -60,11 +57,6 @@ class Dynamo(object):
         if not self.app.config['DYNAMO_TABLES']:
             raise ConfigurationError('You must specify at least one Dynamo table to use.')
 
-        if not self.app.config['AWS_ACCESS_KEY_ID'] and not self.app.config['AWS_SECRET_ACCESS_KEY']:
-            logger.warning('No AWS credentials specified; continuing in the hope '
-                    'that the boto default credentials provider finds an ec2 '
-                    'instance profile.')
-
         if self.app.config['AWS_ACCESS_KEY_ID'] and not self.app.config['AWS_SECRET_ACCESS_KEY']:
             raise ConfigurationError('You must specify AWS_SECRET_ACCESS_KEY if you are specifying AWS_ACCESS_KEY_ID.')
 
@@ -91,8 +83,9 @@ class Dynamo(object):
                     'is_secure': False if self.app.config['DYNAMO_ENABLE_LOCAL'] else True,
                 }
 
-                # only apply if manually specified; otherwise let boto figure it out
-                # (boto will sniff for ec2 instance profile credentials)
+                # Only apply if manually specified: otherwise, we'll let boto
+                # figure it out (boto will sniff for ec2 instance profile
+                # credentials).
                 if self.app.config['AWS_ACCESS_KEY_ID']:
                   kwargs['aws_access_key_id'] = self.app.config['AWS_ACCESS_KEY_ID']
                 if self.app.config['AWS_SECRET_ACCESS_KEY']:
