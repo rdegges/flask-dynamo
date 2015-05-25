@@ -7,6 +7,15 @@ Change Log
 All library changes, in descending order.
 
 
+Version 0.0.7
+-------------
+
+**Released on May 25, 2015.**
+
+- Fixing deferred initialization of app object.  Thanks `@jpanganiban
+  <https://github.com/jpanganiban>`_ for the fix!
+
+
 Version 0.0.6
 -------------
 
