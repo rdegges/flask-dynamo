@@ -33,6 +33,7 @@ class Dynamo(object):
 
         :param obj app: The Flask application.
         """
+        self.app = app
         self.init_settings()
         self.check_settings()
 
