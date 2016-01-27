@@ -3,8 +3,7 @@
 
 from os import environ
 
-from boto.dynamodb2 import connect_to_region
-from boto.dynamodb2.table import Table
+from boto3.session import Session
 from flask import (
     _app_ctx_stack as stack,
 )
@@ -75,27 +74,27 @@ class Dynamo(object):
         ctx = stack.top
         if ctx is not None:
             if not hasattr(ctx, 'dynamo_connection'):
-                kwargs = {
-                    'host': self.app.config['DYNAMO_LOCAL_HOST'] if self.app.config['DYNAMO_ENABLE_LOCAL'] else None,
-                    'port': int(self.app.config['DYNAMO_LOCAL_PORT']) if self.app.config['DYNAMO_ENABLE_LOCAL'] else None,
-                    'is_secure': False if self.app.config['DYNAMO_ENABLE_LOCAL'] else True,
-                }
+                session_kwargs = {}
+                client_kwargs = {}
+                local = True if self.app.config['DYNAMO_ENABLE_LOCAL'] else False
+                if local:
+                    client_kwargs['endpoint_url'] = 'http://{}:{}'.format(
+                        self.app.config['DYNAMO_LOCAL_HOST'],
+                        self.app.config['DYNAMO_LOCAL_PORT'],
+                    )
 
                 # Only apply if manually specified: otherwise, we'll let boto
                 # figure it out (boto will sniff for ec2 instance profile
                 # credentials).
                 if self.app.config['AWS_ACCESS_KEY_ID']:
-                  kwargs['aws_access_key_id'] = self.app.config['AWS_ACCESS_KEY_ID']
+                    session_kwargs['aws_access_key_id'] = self.app.config['AWS_ACCESS_KEY_ID']
                 if self.app.config['AWS_SECRET_ACCESS_KEY']:
-                  kwargs['aws_secret_access_key'] = self.app.config['AWS_SECRET_ACCESS_KEY']
+                    session_kwargs['aws_secret_access_key'] = self.app.config['AWS_SECRET_ACCESS_KEY']
+                if self.app.config.get('AWS_REGION', None):
+                    session_kwargs['region_name'] = self.app.config['AWS_REGION']
 
-                # If DynamoDB local is disabled, we'll remove these settings.
-                if not kwargs['host']:
-                    del kwargs['host']
-                if not kwargs['port']:
-                    del kwargs['port']
-
-                ctx.dynamo_connection = connect_to_region(self.app.config['AWS_REGION'], **kwargs)
+                ctx.dynamo_session = Session(**session_kwargs)
+                ctx.dynamo_connection = ctx.dynamo_session.resource('dynamodb', **client_kwargs)
 
             return ctx.dynamo_connection
 
@@ -112,11 +111,11 @@ class Dynamo(object):
             if not hasattr(ctx, 'dynamo_tables'):
                 ctx.dynamo_tables = {}
                 for table in self.app.config['DYNAMO_TABLES']:
-                    table.connection = self.connection
-                    ctx.dynamo_tables[table.table_name] = table
+                    table_name = table['TableName']
+                    ctx.dynamo_tables[table_name] = table
 
-                    if not hasattr(ctx, 'dynamo_table_%s' % table.table_name):
-                        setattr(ctx, 'dynamo_table_%s' % table.table_name, table)
+                    if not hasattr(ctx, 'dynamo_table_%s' % table_name):
+                        setattr(ctx, 'dynamo_table_%s' % table_name, table)
 
             return ctx.dynamo_tables
 
@@ -135,31 +134,35 @@ class Dynamo(object):
         :raises: AttributeError on error.
         """
         if name in self.tables:
-            return self.tables[name]
+            return self.get_table(name)
 
         raise AttributeError('No table named %s found.' % name)
 
-    def create_all(self):
+    def get_table(self, table_name):
+        return self.connection.Table(table_name)
+
+    def create_all(self, wait=False):
         """
         Create all user-specified DynamoDB tables.
 
         We'll error out if the tables can't be created for some reason.
         """
-        for table_name, table in self.tables.iteritems():
-            Table.create(
-                table_name = table.table_name,
-                schema = table.schema,
-                throughput = table.throughput,
-                indexes = table.indexes,
-                global_indexes = table.global_indexes,
-                connection = self.connection,
-            )
+        for table_name in self.tables:
+            table = self.tables[table_name]
+            self.connection.create_table(**table)
+            if wait:
+                waiter = self.connection.meta.client.get_waiter('table_exists')
+                waiter.wait(TableName=table['TableName'])
 
-    def destroy_all(self):
+    def destroy_all(self, wait=False):
         """
         Destroy all user-specified DynamoDB tables.
 
         We'll error out if the tables can't be destroyed for some reason.
         """
-        for table_name, table in self.tables.iteritems():
+        for table_name in self.tables:
+            table = self.connection.Table(table_name)
             table.delete()
+            if wait:
+                waiter = self.connection.meta.client.get_waiter('table_not_exists')
+                waiter.wait(TableName=table['TableName'])

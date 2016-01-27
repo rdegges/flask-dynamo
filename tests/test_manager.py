@@ -1,4 +1,5 @@
 """Tests for our manager."""
+from __future__ import print_function
 
 
 from os import environ
@@ -6,81 +7,93 @@ from time import sleep
 from unittest import TestCase
 from uuid import uuid4
 
-from boto.dynamodb2.fields import HashKey
-from boto.dynamodb2.layer1 import DynamoDBConnection
-from boto.dynamodb2.table import Table
+import pytest
 from flask import Flask
-from flask.ext.dynamo import Dynamo
-from flask.ext.dynamo.errors import ConfigurationError
+from flask.ext.dynamo import Dynamo, ConfigurationError
 
+def make_table(table_name, name, _type):
+    return dict(
+        TableName=table_name,
+        KeySchema=[dict(AttributeName=name, KeyType='HASH')],
+        AttributeDefinitions=[dict(AttributeName=name, AttributeType=_type)],
+        ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5),
+    )
 
-class DynamoTest(TestCase):
-    """Test our Dynamo extension."""
+@pytest.fixture
+def app(request):
+    app = Flask(__name__)
+    prefix = uuid4().hex
+    app.config['DEBUG'] = True
+    app.config['DYNAMO_TABLES'] = [
+        make_table('%s-phones' % prefix, 'number', 'N'),
+        make_table('%s-users' % prefix, 'username', 'S'),
+    ]
+    return app
 
-    def setUp(self):
-        """
-        Set up a simple Flask app for testing.
+@pytest.fixture
+def local_app(app):
+    app.config['DYNAMO_ENABLE_LOCAL'] = True
+    return app
 
-        This will be used throughout our tests.
-        """
-        self.prefix = uuid4().hex
+@pytest.fixture
+def dynamo(app, request):
+    dynamo = Dynamo(app)
+    return dynamo
 
-        self.app = Flask(__name__)
-        self.app.config['DEBUG'] = True
-        self.app.config['DYNAMO_TABLES'] = [
-            Table('%s-phones' % self.prefix, schema=[HashKey('number')]),
-            Table('%s-users' % self.prefix, schema=[HashKey('username')]),
-        ]
+@pytest.yield_fixture
+def active_dynamo(dynamo, app):
+    with app.app_context():
+        try:
+            dynamo.create_all(wait=True)
+            yield dynamo
+        finally:
+            try:
+                dynamo.destroy_all()
+            except Exception as e:
+                print("Unable to clean up: {}".format(e))
 
-        self.dynamo = Dynamo(self.app)
+def test_extension_classes():
+    import flask_dynamo.errors
+    import flask_dynamo.manager
 
-        with self.app.app_context():
-            self.dynamo.create_all()
-            sleep(60)
+    assert flask_dynamo.manager.Dynamo == Dynamo
+    assert flask_dynamo.errors.ConfigurationError == ConfigurationError
 
-    def test_settings(self):
-        self.assertEqual(len(self.app.config['DYNAMO_TABLES']), 2)
-        self.assertEqual(self.app.config['AWS_ACCESS_KEY_ID'], environ.get('AWS_ACCESS_KEY_ID'))
-        self.assertEqual(self.app.config['AWS_SECRET_ACCESS_KEY'], environ.get('AWS_SECRET_ACCESS_KEY'))
-        self.assertEqual(self.app.config['AWS_REGION'], environ.get('AWS_REGION') or self.dynamo.DEFAULT_REGION)
+def test_settings(app, dynamo):
+    assert len(app.config['DYNAMO_TABLES']) == 2
+    assert app.config['AWS_ACCESS_KEY_ID'] == environ.get('AWS_ACCESS_KEY_ID')
+    assert app.config['AWS_SECRET_ACCESS_KEY'] == environ.get('AWS_SECRET_ACCESS_KEY')
+    assert app.config['AWS_REGION'] == environ.get('AWS_REGION') if environ.get('AWS_REGION') else Dynamo.DEFAULT_REGION
 
-        # Test DynamoDB local settings.
-        app = Flask(__name__)
-        app.config['DEBUG'] = True
-        app.config['DYNAMO_TABLES'] = [
-            Table('%s-phones' % self.prefix, schema=[HashKey('number')]),
-            Table('%s-users' % self.prefix, schema=[HashKey('username')]),
-        ]
-        app.config['DYNAMO_ENABLE_LOCAL'] = True
+def test_local_settings_missing_local_configs(local_app):
+    with pytest.raises(ConfigurationError):
+        Dynamo(local_app)
 
-        self.assertRaises(ConfigurationError, Dynamo, app)
+def test_local_settings_missing_local_port(local_app):
+    local_app.config['DYNAMO_LOCAL_HOST'] = 'localhost'
+    with pytest.raises(ConfigurationError):
+        Dynamo(local_app)
 
-        app.config['DYNAMO_LOCAL_HOST'] = 'localhost'
+def test_local_settings_missing_local_host(local_app):
+    local_app.config['DYNAMO_LOCAL_PORT'] = 8000
+    with pytest.raises(ConfigurationError):
+        Dynamo(local_app)
 
-        self.assertRaises(ConfigurationError, Dynamo, app)
+def test_valid_local_settings(local_app):
+    local_app.config['DYNAMO_LOCAL_PORT'] = 8000
+    local_app.config['DYNAMO_LOCAL_HOST'] = 'localhost'
+    Dynamo(local_app)
 
-        app.config['DYNAMO_LOCAL_PORT'] = 8000
-        self.assertIsInstance(Dynamo(app), object)
+def test_connection(app, dynamo):
+    with app.app_context():
+        assert hasattr(dynamo.connection, 'meta')
+        assert hasattr(dynamo.connection.meta, 'client')
 
-    def test_connection(self):
-        with self.app.app_context():
-            self.assertIsInstance(self.dynamo.connection, DynamoDBConnection)
+def test_tables(app, active_dynamo):
+    with app.app_context():
+        assert len(active_dynamo.tables.keys()) == 2
 
-    def test_tables(self):
-        with self.app.app_context():
-            self.assertEqual(len(self.dynamo.tables.keys()), 2)
-
-            for table_name, table in self.dynamo.tables.iteritems():
-                self.assertIsInstance(table, Table)
-                self.assertEqual(table.table_name, table_name)
-
-    def test_table_access(self):
-        with self.app.app_context():
-            for table_name, table in self.dynamo.tables.iteritems():
-                self.assertEqual(getattr(self.dynamo, table_name), table)
-
-    def tearDown(self):
-        """Destroy all provisioned resources."""
-        with self.app.app_context():
-            self.dynamo.destroy_all()
-            sleep(60)
+def test_table_access(active_dynamo, app):
+    with app.app_context():
+        for table_name, table in active_dynamo.tables.items():
+            assert getattr(active_dynamo, table_name).name == table_name
