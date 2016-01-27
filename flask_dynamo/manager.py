@@ -141,7 +141,7 @@ class Dynamo(object):
     def get_table(self, table_name):
         return self.connection.Table(table_name)
 
-    def create_all(self):
+    def create_all(self, wait=False):
         """
         Create all user-specified DynamoDB tables.
 
@@ -150,6 +150,9 @@ class Dynamo(object):
         for table_name in self.tables:
             table = self.tables[table_name]
             self.connection.create_table(**table)
+            if wait:
+                waiter = self.connection.meta.client.get_waiter('table_exists')
+                waiter.wait(TableName=table['TableName'])
 
     def destroy_all(self):
         """
