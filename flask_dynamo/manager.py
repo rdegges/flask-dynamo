@@ -154,7 +154,7 @@ class Dynamo(object):
                 waiter = self.connection.meta.client.get_waiter('table_exists')
                 waiter.wait(TableName=table['TableName'])
 
-    def destroy_all(self):
+    def destroy_all(self, wait=False):
         """
         Destroy all user-specified DynamoDB tables.
 
@@ -163,3 +163,6 @@ class Dynamo(object):
         for table_name in self.tables:
             table = self.connection.Table(table_name)
             table.delete()
+            if wait:
+                waiter = self.connection.meta.client.get_waiter('table_not_exists')
+                waiter.wait(TableName=table['TableName'])
