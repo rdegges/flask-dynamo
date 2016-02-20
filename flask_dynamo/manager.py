@@ -151,26 +151,32 @@ class Dynamo(object):
         exists, it try to update the throughput and global indexes.
         If none of these values has changed, it will just raise an exception.
         """
-        for table_name, table in self.tables.items():
-            try:
-                Table.create(
-                    table_name = table.table_name,
-                    schema = table.schema,
-                    throughput = table.throughput,
-                    indexes = table.indexes,
-                    global_indexes = table.global_indexes,
-                    connection = self.connection,
-                )
-            except JSONResponseError:
+        tables_failed = []
+        try:
+            for table_name, table in self.tables.items():
                 try:
-                    Table(table.table_name, connection=self.connection).update(
+                    Table.create(
+                        table_name = table.table_name,
+                        schema = table.schema,
                         throughput = table.throughput,
-                        global_indexes = table.global_indexes
+                        indexes = table.indexes,
+                        global_indexes = table.global_indexes,
+                        connection = self.connection,
                     )
                 except JSONResponseError:
-                    raise DynamodbTableError('The table {table_name} creation/update failed'.format(
-                        table_name=table_name
-                    ))
+                    try:
+                        Table(table.table_name, connection=self.connection).update(
+                            throughput = table.throughput,
+                            global_indexes = table.global_indexes
+                        )
+                    except JSONResponseError:
+                        tables_failed.append(table_name)
+                        continue
+        finally:
+            if len(tables_failed):
+                raise DynamodbTableError('The tables {tables_failed} creation/update failed'.format(
+                    tables_failed=', '.join(tables_failed)
+                ))
 
     def destroy_all(self):
         """
