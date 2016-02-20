@@ -5,11 +5,15 @@ from os import environ
 
 from boto.dynamodb2 import connect_to_region
 from boto.dynamodb2.table import Table
+from boto.exception import JSONResponseError
 from flask import (
     _app_ctx_stack as stack,
 )
 
-from .errors import ConfigurationError
+from .errors import (
+    ConfigurationError,
+    DynamodbTableError,
+)
 
 
 class Dynamo(object):
@@ -143,17 +147,36 @@ class Dynamo(object):
         """
         Create all user-specified DynamoDB tables.
 
-        We'll error out if the tables can't be created for some reason.
+        This function try to create each table defined. If the table already
+        exists, it try to update the throughput and global indexes.
+        If none of these values has changed, it will just raise an exception.
         """
-        for table_name, table in self.tables.iteritems():
-            Table.create(
-                table_name = table.table_name,
-                schema = table.schema,
-                throughput = table.throughput,
-                indexes = table.indexes,
-                global_indexes = table.global_indexes,
-                connection = self.connection,
-            )
+        tables_failed = []
+        try:
+            for table_name, table in self.tables.items():
+                try:
+                    Table.create(
+                        table_name = table.table_name,
+                        schema = table.schema,
+                        throughput = table.throughput,
+                        indexes = table.indexes,
+                        global_indexes = table.global_indexes,
+                        connection = self.connection,
+                    )
+                except JSONResponseError:
+                    try:
+                        Table(table.table_name, connection=self.connection).update(
+                            throughput = table.throughput,
+                            global_indexes = table.global_indexes
+                        )
+                    except JSONResponseError:
+                        tables_failed.append(table_name)
+                        continue
+        finally:
+            if len(tables_failed):
+                raise DynamodbTableError('The tables {tables_failed} creation/update failed'.format(
+                    tables_failed=', '.join(tables_failed)
+                ))
 
     def destroy_all(self):
         """
@@ -161,5 +184,5 @@ class Dynamo(object):
 
         We'll error out if the tables can't be destroyed for some reason.
         """
-        for table_name, table in self.tables.iteritems():
+        for table_name, table in self.tables.items():
             table.delete()
