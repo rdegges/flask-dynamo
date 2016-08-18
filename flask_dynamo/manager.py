@@ -143,9 +143,14 @@ class Dynamo(object):
         """
         Create all user-specified DynamoDB tables.
 
+        We'll ignore table(s) that already exists.
         We'll error out if the tables can't be created for some reason.
         """
         for table_name, table in self.tables.iteritems():
+
+            if self.tables.get(table_name):
+                continue
+
             Table.create(
                 table_name = table.table_name,
                 schema = table.schema,
