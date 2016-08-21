@@ -7,6 +7,16 @@ Change Log
 All library changes, in descending order.
 
 
+Version 0.0.8
+-------------
+
+**Not yet released.**
+
+- Improving the ``create_all`` management command so it won't error out when
+  attempting to re-create already created tables.  Thanks `@amir-beheshty
+  <https://github.com/amir-beheshty>`_ for the codez!
+
+
 Version 0.0.7
 -------------
 
