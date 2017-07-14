@@ -68,24 +68,29 @@ Below is an example::
 
     # app.py
 
-
-    from boto.dynamodb2.fields import HashKey
-    from boto.dynamodb2.table import Table
-
     from flask import Flask
     from flask.ext.dynamo import Dynamo
 
     app = Flask(__name__)
     app.config['DYNAMO_TABLES'] = [
-        Table('users', schema=[HashKey('username')]),
-        Table('groups', schema=[HashKey('name')]),
-    ]
+        {
+             TableName='users',
+             KeySchema=[dict(AttributeName='username', KeyType='HASH')],
+             AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
+             ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+        }, {
+             TableName='groups',
+             KeySchema=[dict(AttributeName='name', KeyType='HASH')],
+             AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
+             ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+        }
+     ]
 
 In the above example, I'm defining two DynamoDB tables: ``users`` and
 ``groups``, along with their respective schemas.
 
 flask-dynamo will respect *any* boto tables you define -- it will also respect
-any of the other fields you specify on your tables.
+any of the other fields you specify on your tables
 
 
 Initialize Dynamo
@@ -98,17 +103,22 @@ All you need to do is pass your app to the ``Dynamo`` constructor::
 
     # app.py
 
-
-    from boto.dynamodb2.fields import HashKey
-    from boto.dynamodb2.table import Table
-
     from flask import Flask
     from flask.ext.dynamo import Dynamo
 
     app = Flask(__name__)
     app.config['DYNAMO_TABLES'] = [
-        Table('users', schema=[HashKey('username')]),
-        Table('groups', schema=[HashKey('name')]),
+        {
+             TableName='users',
+             KeySchema=[dict(AttributeName='username', KeyType='HASH')],
+             AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
+             ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+        }, {
+             TableName='groups',
+             KeySchema=[dict(AttributeName='name', KeyType='HASH')],
+             AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
+             ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+        }
     ]
 
     dynamo = Dynamo(app)
@@ -225,5 +235,5 @@ No other code needs to be changed in order to use DynamoDB Local.
 .. _pip: http://pip.readthedocs.org/en/latest/
 .. _AWS Console: https://console.aws.amazon.com/iam/home?#security_credential
 .. _StackOverflow question: http://stackoverflow.com/questions/5971312/how-to-set-environment-variables-in-python
-.. _boto DynamoDB tutorial: http://boto.readthedocs.org/en/latest/dynamodb2_tut.html
+.. _boto DynamoDB tutorial: http://boto3.readthedocs.io/en/latest/guide/dynamodb.html
 .. _DynamoDB Local documentation: http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Tools.DynamoDBLocal.html
