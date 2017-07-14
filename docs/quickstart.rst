@@ -90,7 +90,7 @@ In the above example, I'm defining two DynamoDB tables: ``users`` and
 ``groups``, along with their respective schemas.
 
 flask-dynamo will respect *any* boto tables you define -- it will also respect
-any of the other fields you specify on your tables
+any of the other fields you specify on your tables.
 
 
 Initialize Dynamo

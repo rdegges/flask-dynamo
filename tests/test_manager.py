@@ -3,12 +3,10 @@ from __future__ import print_function
 
 
 from os import environ
-from time import sleep
-from unittest import TestCase
 from uuid import uuid4
 
 import pytest
-from flask import Flask
+from flask import Flask, current_app
 from flask.ext.dynamo import Dynamo, ConfigurationError
 
 def make_table(table_name, name, _type):
@@ -96,4 +94,4 @@ def test_tables(app, active_dynamo):
 def test_table_access(active_dynamo, app):
     with app.app_context():
         for table_name, table in active_dynamo.tables.items():
-            assert getattr(active_dynamo, table_name).name == table_name
+            assert getattr(active_dynamo, table_name)['TableName'] == table_name
