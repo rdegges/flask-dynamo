@@ -1,5 +1,5 @@
 .. _quickstart:
-.. module:: flask.ext.dynamo
+.. module:: flask_dynamo
 
 
 Quickstart
@@ -69,7 +69,7 @@ Below is an example::
     # app.py
 
     from flask import Flask
-    from flask.ext.dynamo import Dynamo
+    from flask_dynamo import Dynamo
 
     app = Flask(__name__)
     app.config['DYNAMO_TABLES'] = [
@@ -104,7 +104,7 @@ All you need to do is pass your app to the ``Dynamo`` constructor::
     # app.py
 
     from flask import Flask
-    from flask.ext.dynamo import Dynamo
+    from flask_dynamo import Dynamo
 
     app = Flask(__name__)
     app.config['DYNAMO_TABLES'] = [
@@ -123,8 +123,38 @@ All you need to do is pass your app to the ``Dynamo`` constructor::
 
     dynamo = Dynamo(app)
 
+If you use the app factory pattern then use::
+
+    # app.py
+
+    from flask import Flask
+    from flask_dynamo import Dynamo
+
+    def create_app():
+        app = Flask(__name__)
+        app.config['DYNAMO_TABLES'] = [
+            {
+                 TableName='users',
+                 KeySchema=[dict(AttributeName='username', KeyType='HASH')],
+                 AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
+                 ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+            }, {
+                 TableName='groups',
+                 KeySchema=[dict(AttributeName='name', KeyType='HASH')],
+                 AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
+                 ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+            }
+        ]
+        dynamo = Dynamo()
+        dynamo.init_app(app)
+        return app
+
+    app = create_app()
+
+
 From this point on, you can interact with DynamoDB through the global ``dynamo``
-object.
+object, or through ``Flask.current_app.extensions['dynamodb']`` if you are
+using the Flask app factory pattern.
 
 
 Create Your Tables
@@ -145,10 +175,8 @@ This works great in bootstrap scripts.
 Working with Tables
 -------------------
 
-Now that you've got everything setup, you can easily access your tables in one
-of two ways: you can either access the table directly from the ``dynamo``
-global, or you can access the table in a dictionary-like format through
-``dynamo.tables``.
+Now that you've got everything setup, you can easily access your tables
+in a dictionary-like format through ``dynamo.tables``.
 
 Below is an example view which creates a new user account::
 
@@ -156,15 +184,6 @@ Below is an example view which creates a new user account::
 
     @app.route('/create_user')
     def create_user():
-        dynamo.users.put_item(data={
-            'username': 'rdegges',
-            'first_name': 'Randall',
-            'last_name': 'Degges',
-            'email': 'r@rdegges.com',
-        })
-
-        # or ...
-
         dynamo.tables['users'].put_item(data={
             'username': 'rdegges',
             'first_name': 'Randall',
@@ -172,17 +191,14 @@ Below is an example view which creates a new user account::
             'email': 'r@rdegges.com',
         })
 
-Either of the above will work the same.
-
 On a related note, you can also use the ``dynamo.tables`` dictionary to iterate
 through all of your tables (*this is sometimes useful*).  Here's how you could
 iterate over your existing DynamoDB tables::
 
     # app.py
 
-    with app.app_context():
-        for table_name, table in dynamo.tables.iteritems():
-            print table_name, table
+    for table_name, table in dynamo.tables.items():
+        print(table_name, table)
 
 
 Deleting Tables
@@ -195,8 +211,7 @@ The below code snippet will destroy all of your predefined DynamoDB tables::
 
     # app.py
 
-    with app.app_context():
-        dynamo.destroy_all()
+    dynamo.destroy_all()
 
 .. note::
     Please be *extremely* careful when running this -- it has the potential to

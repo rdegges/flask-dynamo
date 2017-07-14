@@ -16,7 +16,7 @@
 from os.path import abspath
 from sys import path
 
-from flask.ext.dynamo import __version__ as version
+from flask_dynamo import __version__ as version
 
 
 # If extensions (or modules to document with autodoc) are in another directory,
