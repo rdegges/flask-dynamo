@@ -16,7 +16,7 @@ from subprocess import call
 from setuptools import Command, setup
 
 
-VERSION = '0.0.7'
+VERSION = '0.1.0'
 
 
 class RunTests(Command):
@@ -32,8 +32,9 @@ class RunTests(Command):
 
     def run(self):
         """Run all tests!"""
-        errno = call(['py.test'])
-        raise SystemExit(errno)
+        import sys
+        import py.test
+        raise SystemExit(py.test.main(args=[]))
 
 
 setup(
@@ -48,7 +49,7 @@ setup(
     include_package_data = True,
 
     # Package dependencies:
-    install_requires = ['boto>=2.29.1', 'Flask>=0.10.1'],
+    install_requires = ['boto3>=1.1.4', 'Flask>=0.10.1'],
 
     # Metadata for PyPI:
     author = 'Randall Degges',
@@ -73,6 +74,10 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
 
