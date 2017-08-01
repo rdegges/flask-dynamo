@@ -16,7 +16,7 @@ from subprocess import call
 from setuptools import Command, setup
 
 
-VERSION = '0.0.7'
+VERSION = '0.0.8'
 
 
 class RunTests(Command):
