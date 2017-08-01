@@ -22,7 +22,7 @@ Version 0.1.0
 Version 0.0.8
 -------------
 
-**Not yet released.**
+**Released on August 1, 2017.**
 
 - Improving the ``create_all`` management command so it won't error out when
   attempting to re-create already created tables.  Thanks `@amir-beheshty
