@@ -3,13 +3,11 @@ from __future__ import print_function
 
 
 from os import environ
-from time import sleep
-from unittest import TestCase
 from uuid import uuid4
 
 import pytest
-from flask import Flask
-from flask.ext.dynamo import Dynamo, ConfigurationError
+from flask import Flask, current_app
+from flask_dynamo import Dynamo, ConfigurationError
 
 def make_table(table_name, name, _type):
     return dict(
@@ -89,11 +87,9 @@ def test_connection(app, dynamo):
         assert hasattr(dynamo.connection, 'meta')
         assert hasattr(dynamo.connection.meta, 'client')
 
-def test_tables(app, active_dynamo):
-    with app.app_context():
-        assert len(active_dynamo.tables.keys()) == 2
-
 def test_table_access(active_dynamo, app):
     with app.app_context():
+        assert len(active_dynamo.tables.keys()) == 2
         for table_name, table in active_dynamo.tables.items():
-            assert getattr(active_dynamo, table_name).name == table_name
+            assert active_dynamo.tables[table_name].name == table_name
+            assert current_app.extensions['dynamo'].tables[table_name].name == table_name

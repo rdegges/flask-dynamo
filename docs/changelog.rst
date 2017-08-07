@@ -6,6 +6,28 @@ Change Log
 
 All library changes, in descending order.
 
+Version 0.1.0
+-------------
+
+**Not yet released.**
+
+- Added support for flask app factory and traditional methods of initialization.
+- Added documentation for boto3.
+- Fixed reuse of dynamodb connections across requests.
+- Optimized tests to run faster.
+- Added support for AWS_SESSION_TOKEN.  Thanks `@vbisserie
+  <https://github.com/vbisserie>`_ for the code!
+
+
+Version 0.0.8
+-------------
+
+**Released on August 1, 2017.**
+
+- Improving the ``create_all`` management command so it won't error out when
+  attempting to re-create already created tables.  Thanks `@amir-beheshty
+  <https://github.com/amir-beheshty>`_ for the codez!
+
 
 Version 0.0.7
 -------------
