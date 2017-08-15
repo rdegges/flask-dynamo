@@ -42,8 +42,10 @@ class DynamoLazyTables(object):
         self._wait(table_name, 'table_not_exists')
 
     def create_all(self, wait=False):
+        tables_name_list = [table.name for table in self._connection.tables.all()]
         for table in self._table_config:
-            self._connection.create_table(**table)
+            if table['TableName'] not in tables_name_list:
+                self._connection.create_table(**table)
         if wait:
             for table in self._table_config:
                 self.wait_exists(table['TableName'])
