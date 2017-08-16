@@ -48,7 +48,8 @@ class DynamoLazyTables(object):
                 self._connection.create_table(**table)
         if wait:
             for table in self._table_config:
-                self.wait_exists(table['TableName'])
+                if table['TableName'] not in tables_name_list:
+                    self.wait_exists(table['TableName'])
 
     def destroy_all(self, wait=False):
         for table in self._table_config:
