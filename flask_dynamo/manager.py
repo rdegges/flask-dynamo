@@ -92,6 +92,7 @@ class Dynamo(object):
     @staticmethod
     def _init_settings(app):
         """Initialize all of the extension settings."""
+        app.config.setdefault('DYNAMO_SESSION', None)
         app.config.setdefault('DYNAMO_TABLES', [])
         app.config.setdefault('DYNAMO_ENABLE_LOCAL', environ.get('DYNAMO_ENABLE_LOCAL', False))
         app.config.setdefault('DYNAMO_LOCAL_HOST', environ.get('DYNAMO_LOCAL_HOST'))
@@ -148,6 +149,40 @@ class Dynamo(object):
                 'flask-dynamo extension not registered on flask app'
             )
 
+    @staticmethod
+    def _init_session(app):
+        session_kwargs = {}
+        # Only apply if manually specified: otherwise, we'll let boto
+        # figure it out (boto will sniff for ec2 instance profile
+        # credentials).
+        if app.config['AWS_ACCESS_KEY_ID']:
+            session_kwargs['aws_access_key_id'] = app.config['AWS_ACCESS_KEY_ID']
+        if app.config['AWS_SECRET_ACCESS_KEY']:
+            session_kwargs['aws_secret_access_key'] = app.config['AWS_SECRET_ACCESS_KEY']
+        if app.config.get('AWS_SESSION_TOKEN', None):
+            session_kwargs['aws_session_token'] = app.config['AWS_SESSION_TOKEN']
+        if app.config.get('AWS_REGION', None):
+            session_kwargs['region_name'] = app.config['AWS_REGION']
+        return Session(**session_kwargs)
+
+
+    @property
+    def session(self):
+        """
+        Our DynamoDB session.
+
+        This will be lazily created if this is the first time this is being
+        accessed.  This session is reused for performance.
+        """
+        app = self._get_app()
+        ctx = self._get_ctx(app)
+        try:
+            return ctx._session
+        except AttributeError:
+            ctx._session = app.config['DYNAMO_SESSION'] or self._init_session(app)
+            return ctx._session
+
+
     @property
     def connection(self):
         """
@@ -161,7 +196,6 @@ class Dynamo(object):
         try:
             return ctx._connection
         except AttributeError:
-            session_kwargs = {}
             client_kwargs = {}
             local = True if app.config['DYNAMO_ENABLE_LOCAL'] else False
             if local:
@@ -170,20 +204,7 @@ class Dynamo(object):
                     app.config['DYNAMO_LOCAL_PORT'],
                 )
 
-            # Only apply if manually specified: otherwise, we'll let boto
-            # figure it out (boto will sniff for ec2 instance profile
-            # credentials).
-            if app.config['AWS_ACCESS_KEY_ID']:
-                session_kwargs['aws_access_key_id'] = app.config['AWS_ACCESS_KEY_ID']
-            if app.config['AWS_SECRET_ACCESS_KEY']:
-                session_kwargs['aws_secret_access_key'] = app.config['AWS_SECRET_ACCESS_KEY']
-            if app.config.get('AWS_SESSION_TOKEN', None):
-                session_kwargs['aws_session_token'] = app.config['AWS_SESSION_TOKEN']
-            if app.config.get('AWS_REGION', None):
-                session_kwargs['region_name'] = app.config['AWS_REGION']
-
-            ctx._session = Session(**session_kwargs)
-            ctx._connection = ctx._session.resource('dynamodb', **client_kwargs)
+            ctx._connection = self.session.resource('dynamodb', **client_kwargs)
 
             return ctx._connection
 
