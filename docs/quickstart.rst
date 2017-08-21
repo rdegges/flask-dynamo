@@ -238,7 +238,7 @@ The settings you need to set are:
 - ``DYNAMO_LOCAL_PORT`` - Set this to your local DB port -- usually ``8000``.
 
 The settings above can be specified in one of two ways, either via environment
-variables, or via application configuration options directly, eg:
+variables, or via application configuration options directly, eg::
 
     app.config['DYNAMO_ENABLE_LOCAL'] = True
     app.config['DYNAMO_LOCAL_HOST'] = 'localhost'
