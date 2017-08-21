@@ -95,11 +95,11 @@ class Dynamo(object):
         app.config.setdefault('DYNAMO_SESSION', None)
         app.config.setdefault('DYNAMO_TABLES', [])
         app.config.setdefault('DYNAMO_ENABLE_LOCAL', environ.get('DYNAMO_ENABLE_LOCAL', False))
-        app.config.setdefault('DYNAMO_LOCAL_HOST', environ.get('DYNAMO_LOCAL_HOST'))
-        app.config.setdefault('DYNAMO_LOCAL_PORT', environ.get('DYNAMO_LOCAL_PORT'))
-        app.config.setdefault('AWS_ACCESS_KEY_ID', environ.get('AWS_ACCESS_KEY_ID'))
-        app.config.setdefault('AWS_SECRET_ACCESS_KEY', environ.get('AWS_SECRET_ACCESS_KEY'))
-        app.config.setdefault('AWS_SESSION_TOKEN', environ.get('AWS_SESSION_TOKEN'))
+        app.config.setdefault('DYNAMO_LOCAL_HOST', environ.get('DYNAMO_LOCAL_HOST', None))
+        app.config.setdefault('DYNAMO_LOCAL_PORT', environ.get('DYNAMO_LOCAL_PORT', None))
+        app.config.setdefault('AWS_ACCESS_KEY_ID', environ.get('AWS_ACCESS_KEY_ID', None))
+        app.config.setdefault('AWS_SECRET_ACCESS_KEY', environ.get('AWS_SECRET_ACCESS_KEY', None))
+        app.config.setdefault('AWS_SESSION_TOKEN', environ.get('AWS_SESSION_TOKEN', None))
         app.config.setdefault('AWS_REGION', environ.get('AWS_REGION', Dynamo.DEFAULT_REGION))
 
     @staticmethod
@@ -159,9 +159,9 @@ class Dynamo(object):
             session_kwargs['aws_access_key_id'] = app.config['AWS_ACCESS_KEY_ID']
         if app.config['AWS_SECRET_ACCESS_KEY']:
             session_kwargs['aws_secret_access_key'] = app.config['AWS_SECRET_ACCESS_KEY']
-        if app.config.get('AWS_SESSION_TOKEN', None):
+        if app.config['AWS_SESSION_TOKEN']:
             session_kwargs['aws_session_token'] = app.config['AWS_SESSION_TOKEN']
-        if app.config.get('AWS_REGION', None):
+        if app.config['AWS_REGION']:
             session_kwargs['region_name'] = app.config['AWS_REGION']
         return Session(**session_kwargs)
 
