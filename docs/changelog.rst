@@ -6,6 +6,18 @@ Change Log
 
 All library changes, in descending order.
 
+Version 0.1.0
+-------------
+
+**Not yet released.**
+
+- Added support for flask app factory and traditional methods of initialization.
+- Added documentation for boto3.
+- Fixed reuse of dynamodb connections across requests.
+- Optimized tests to run faster.
+- Added support for AWS_SESSION_TOKEN.  Thanks `@vbisserie
+  <https://github.com/vbisserie>`_ for the code!
+
 
 Version 0.0.8
 -------------

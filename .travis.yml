@@ -1,14 +1,18 @@
 language: python
 python:
-  - '2.7'
-  - 'pypy'
+- '2.7'
+- '3.3'
+- '3.4'
+- '3.5'
+- '3.6'
+- pypy
 install:
-  - pip install -r requirements.txt
-  - python setup.py develop
+- pip install -r requirements.txt
+- python setup.py develop
 script:
-  - python setup.py test
-  - cd docs && make html
+- python setup.py test
+- cd docs && make html
 env:
   global:
-  - secure: "Lt0DLSvIV2lzul1Z3/eusQ5WMUlUqWQPNclELkN+Dtn51KAm105ZuLJMjyCb5Aq/Fr1plKTEJm+faeyIX2PkmnxUYcfXsFuG4SfM+SZzPPfXndWuPqaa+k/LkcTAtwm/WBtvFmBjwumUhLGdQgDIE9mmQ7TBiF8zt89ySQCejb4="
-  - secure: "EYmpcJVxQmlrbZOrKHq4mKBQSsBuaISEVb/UMe55TbcbunfT+vkXgycX1xF2MYBBVvDpKv2F5pK9z2YHA3IS4QhscdC1aVkYhnM86VD1IdWq1lbhgL4hjoFwg4uBZGCOBArua5dVXC/7fnyaF0vtBMmQRavgrW16zBGBdvRBmcA="
+  - secure: QktJb8B+STvIhcKu4oCG2f0W5IqzHkQVPP4uE5nxCZw64tKTRGhiHmtofxRMDqKl6ORlc9dSn8yHpyR4kCwDXSGYiOJi3jnI2bKz7DoqiKry5y+/PaUvJhYuVKfirTr2F5Wwzi1c06Zm7jQ1EpRqMe8qiZaqw1G5JGRDwnpqzoA=
+  - secure: V5HoVHPokoTRfpZstIn/O542w4dStXnAUwxSMTl1EzyaBMqONvBiW28Xkbxh5XekLa3NumoZKh9ZZQ7WwNXO00pmieNeYLXcWByztF937ozsraBHhmTnVvK59O4IkxlVy/jlxHrtIcRMdzXuIyubOppzYVUSc/rP+sbXXI4314Y=
