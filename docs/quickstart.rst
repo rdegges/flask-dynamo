@@ -254,3 +254,22 @@ No other code needs to be changed in order to use DynamoDB Local.
 .. _StackOverflow question: http://stackoverflow.com/questions/5971312/how-to-set-environment-variables-in-python
 .. _boto DynamoDB tutorial: http://boto3.readthedocs.io/en/latest/guide/dynamodb.html
 .. _DynamoDB Local documentation: http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Tools.DynamoDBLocal.html
+
+
+Specifying boto3 session
+------------------------
+
+If you would like to specify the boto3 session that Flask-dynamo should use,
+you can specify it by providing the boto3 session in the app config. This is
+optional, and if you don't specify a session, flask-dynamo will create one for
+you. This may be useful if you want to reuse the boto3 session with multiple
+plugins.
+
+- ``DYNAMO_SESSION`` - *optional* Sets the boto3 session that flask-dynamo
+  should use
+
+    from boto3.session import Session()
+    boto_sess = Session(region_name='us-east-1',
+                        aws_access_key_id='example_key_id',
+                        aws_secret_access_key='my_super_secret_key')
+    app.config['DYNAMO_SESSION'] = boto_sess
