@@ -260,10 +260,9 @@ Specifying boto3 session
 ------------------------
 
 If you would like to specify the boto3 session that Flask-dynamo should use,
-you can specify it by providing the boto3 session in the app config. This is
-optional, and if you don't specify a session, flask-dynamo will create one for
-you. This may be useful if you want to reuse the boto3 session with multiple
-plugins.
+flask-dynamo has an option in the app config. This is optional, and if you
+don't specify a session, flask-dynamo will create one for you. This may be
+useful if you want to reuse the boto3 session with multiple plugins.
 
 - ``DYNAMO_SESSION`` - *optional* Sets the boto3 session that flask-dynamo
   should use. eg::
