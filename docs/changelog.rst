@@ -6,12 +6,14 @@ Change Log
 
 All library changes, in descending order.
 
+
 Version 0.1.1
 -------------
 
-**Not yet released.**
+**Released on August 21, 2017.**
 
 - Added support for shared boto3 session.
+
 
 Version 0.1.0
 -------------
