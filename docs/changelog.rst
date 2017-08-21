@@ -6,10 +6,17 @@ Change Log
 
 All library changes, in descending order.
 
-Version 0.1.0
+Version 0.1.1
 -------------
 
 **Not yet released.**
+
+- Added support for shared boto3 session.
+
+Version 0.1.0
+-------------
+
+**Released on August 21, 2017.**
 
 - Added support for flask app factory and traditional methods of initialization.
 - Added documentation for boto3.
