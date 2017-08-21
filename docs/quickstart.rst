@@ -266,7 +266,7 @@ you. This may be useful if you want to reuse the boto3 session with multiple
 plugins.
 
 - ``DYNAMO_SESSION`` - *optional* Sets the boto3 session that flask-dynamo
-  should use
+  should use. eg::
 
     from boto3.session import Session()
     boto_sess = Session(region_name='us-east-1',
