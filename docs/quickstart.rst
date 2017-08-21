@@ -256,7 +256,7 @@ No other code needs to be changed in order to use DynamoDB Local.
 .. _DynamoDB Local documentation: http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Tools.DynamoDBLocal.html
 
 
-Specifying boto3 session
+Specifying boto3 Session
 ------------------------
 
 If you would like to specify the boto3 session that Flask-dynamo should use,
@@ -268,7 +268,9 @@ useful if you want to reuse the boto3 session with multiple plugins.
   should use. eg::
 
     from boto3.session import Session()
-    boto_sess = Session(region_name='us-east-1',
-                        aws_access_key_id='example_key_id',
-                        aws_secret_access_key='my_super_secret_key')
+    boto_sess = Session(
+        region_name='us-east-1',
+        aws_access_key_id='example_key_id',
+        aws_secret_access_key='my_super_secret_key'
+    )
     app.config['DYNAMO_SESSION'] = boto_sess
