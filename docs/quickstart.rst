@@ -53,6 +53,8 @@ If you're unsure of how to set environment variables, I recommend you check out
 this `StackOverflow question`_.
 
 
+.. _specify-your-tables:
+
 Specify Your Tables
 -------------------
 

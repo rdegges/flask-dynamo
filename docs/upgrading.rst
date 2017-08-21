@@ -10,13 +10,14 @@ flask-dynamo releases.
 Version 0.0.8 -> Version 0.1.0
 ------------------------------
 
-**Changes required!**
-* The app.config['DYNAMO_TABLES'] schema needs to be updated to boto3 style. See
-  :ref:`quickstart` for examples of how to do this.
-* **Note** boto3 is a new requirement.
-* **Optional** Use the app factory pattern, and access dynamo via
-  ``Flask.current_app.extensions['dynamodb']``
+**Changes required.**
 
+* The ``app.config['DYNAMO_TABLES']`` schema needs to be updated to `boto3
+  <https://boto3.readthedocs.io/en/latest/guide/dynamodb.html#creating-a-new-table>`_
+  style. See :ref:`Specify Your Tables <specify-your-tables>` for examples of
+  how to do this.
+* **OPTIONAL**: Use the app factory pattern, and access Dynamo via
+  ``Flask.current_app.extensions['dynamodb']``
 
 
 Version 0.0.7 -> Version 0.0.8
