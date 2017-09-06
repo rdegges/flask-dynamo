@@ -7,6 +7,14 @@ Change Log
 All library changes, in descending order.
 
 
+Version 0.1.2
+-------------
+
+**Released on September 6, 2017.**
+
+- Fixing init issues.
+
+
 Version 0.1.1
 -------------
 
