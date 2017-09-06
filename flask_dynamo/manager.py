@@ -87,9 +87,7 @@ class Dynamo(object):
 
         app.extensions['dynamo'] = self
 
-        conn = self._connection(app=app)
-
-        self.tables = DynamoLazyTables(conn, app.config['DYNAMO_TABLES'])
+        self.tables = DynamoLazyTables(self.connection, app.config['DYNAMO_TABLES'])
 
     @staticmethod
     def _init_settings(app):
@@ -167,15 +165,6 @@ class Dynamo(object):
             session_kwargs['region_name'] = app.config['AWS_REGION']
         return Session(**session_kwargs)
 
-    def _session(self, app=None):
-        if not app:
-            app = self._get_app()
-        ctx = self._get_ctx(app)
-        try:
-            return ctx._session_instance
-        except AttributeError:
-            ctx._session_instance = app.config['DYNAMO_SESSION'] or self._init_session(app)
-            return ctx._session_instance
 
     @property
     def session(self):
@@ -185,27 +174,14 @@ class Dynamo(object):
         This will be lazily created if this is the first time this is being
         accessed.  This session is reused for performance.
         """
-        return self._session()
-
-    def _connection(self, app=None):
-        if not app:
-            app = self._get_app()
-
+        app = self._get_app()
         ctx = self._get_ctx(app)
         try:
-            return ctx._connection_instance
+            return ctx._session
         except AttributeError:
-            client_kwargs = {}
-            local = True if app.config['DYNAMO_ENABLE_LOCAL'] else False
-            if local:
-                client_kwargs['endpoint_url'] = 'http://{}:{}'.format(
-                    app.config['DYNAMO_LOCAL_HOST'],
-                    app.config['DYNAMO_LOCAL_PORT'],
-                )
+            ctx._session = app.config['DYNAMO_SESSION'] or self._init_session(app)
+            return ctx._session
 
-            ctx._connection_instance = self._session(app=app).resource('dynamodb', **client_kwargs)
-
-            return ctx._connection_instance
 
     @property
     def connection(self):
@@ -215,7 +191,22 @@ class Dynamo(object):
         This will be lazily created if this is the first time this is being
         accessed.  This connection is reused for performance.
         """
-        return self._connection()
+        app = self._get_app()
+        ctx = self._get_ctx(app)
+        try:
+            return ctx._connection
+        except AttributeError:
+            client_kwargs = {}
+            local = True if app.config['DYNAMO_ENABLE_LOCAL'] else False
+            if local:
+                client_kwargs['endpoint_url'] = 'http://{}:{}'.format(
+                    app.config['DYNAMO_LOCAL_HOST'],
+                    app.config['DYNAMO_LOCAL_PORT'],
+                )
+
+            ctx._connection = self.session.resource('dynamodb', **client_kwargs)
+
+            return ctx._connection
 
     def get_table(self, table_name):
         return self.tables[table_name]
