@@ -15,8 +15,10 @@ from subprocess import call
 
 from setuptools import Command, setup
 
+from flask_dynamo import __version__
 
-VERSION = '0.1.1'
+
+VERSION = __version__
 
 
 class RunTests(Command):
