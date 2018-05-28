@@ -102,7 +102,9 @@ class Dynamo(object):
         app.config.setdefault('AWS_ACCESS_KEY_ID', environ.get('AWS_ACCESS_KEY_ID', None))
         app.config.setdefault('AWS_SECRET_ACCESS_KEY', environ.get('AWS_SECRET_ACCESS_KEY', None))
         app.config.setdefault('AWS_SESSION_TOKEN', environ.get('AWS_SESSION_TOKEN', None))
-        app.config.setdefault('AWS_REGION', environ.get('AWS_REGION', Dynamo.DEFAULT_REGION))
+        # for backward compatible
+        dynamo_region = environ.get('AWS_REGION', Dynamo.DEFAULT_REGION)
+        app.config.setdefault('DYNAMO_REGION', environ.get('DYNAMO_REGION', dynamo_region))
 
     @staticmethod
     def _check_settings(app):
@@ -163,8 +165,8 @@ class Dynamo(object):
             session_kwargs['aws_secret_access_key'] = app.config['AWS_SECRET_ACCESS_KEY']
         if app.config['AWS_SESSION_TOKEN']:
             session_kwargs['aws_session_token'] = app.config['AWS_SESSION_TOKEN']
-        if app.config['AWS_REGION']:
-            session_kwargs['region_name'] = app.config['AWS_REGION']
+        if app.config['DYNAMO_REGION']:
+            session_kwargs['region_name'] = app.config['DYNAMO_REGION']
         return Session(**session_kwargs)
 
     def _session(self, app=None):

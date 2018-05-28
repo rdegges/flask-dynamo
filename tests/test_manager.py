@@ -61,7 +61,7 @@ def test_settings(app, dynamo):
     assert len(app.config['DYNAMO_TABLES']) == 2
     assert app.config['AWS_ACCESS_KEY_ID'] == environ.get('AWS_ACCESS_KEY_ID')
     assert app.config['AWS_SECRET_ACCESS_KEY'] == environ.get('AWS_SECRET_ACCESS_KEY')
-    assert app.config['AWS_REGION'] == environ.get('AWS_REGION') if environ.get('AWS_REGION') else Dynamo.DEFAULT_REGION
+    assert app.config['DYNAMO_REGION'] == environ.get('DYNAMO_REGION') if environ.get('DYNAMO_REGION') else environ.get('AWS_REGION', Dynamo.DEFAULT_REGION)
 
 def test_local_settings_missing_local_configs(local_app):
     with pytest.raises(ConfigurationError):
