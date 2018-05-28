@@ -38,7 +38,7 @@ The required environment variables are:
 
 There are also optional variables you can set:
 
-- ``AWS_REGION`` (*defaults to us-east-1*)
+- ``DYNAMO_REGION`` (*defaults to us-east-1*)
 - ``DYNAMO_ENABLE_LOCAL`` (*defaults to False*)
 - ``DYNAMO_LOCAL_HOST`` (*defaults to None*)
 - ``DYNAMO_LOCAL_PORT`` (*defaults to None*)
