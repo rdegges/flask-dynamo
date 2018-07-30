@@ -34,6 +34,11 @@ class DynamoLazyTables(object):
     def _wait(self, table_name, type_waiter):
         waiter = self._connection.meta.client.get_waiter(type_waiter)
         waiter.wait(TableName=table_name)
+    
+    def scan(self, name):
+        """Scan a table by name."""
+        scan = self.connection.Table(name).scan()
+        return scan
 
     def wait_exists(self, table_name):
         self._wait(table_name, 'table_exists')
