@@ -75,17 +75,17 @@ Below is an example::
 
     app = Flask(__name__)
     app.config['DYNAMO_TABLES'] = [
-        {
+        dict(
              TableName='users',
              KeySchema=[dict(AttributeName='username', KeyType='HASH')],
              AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
              ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
-        }, {
+        ), dict(
              TableName='groups',
              KeySchema=[dict(AttributeName='name', KeyType='HASH')],
              AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
              ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
-        }
+        )
      ]
 
 In the above example, I'm defining two DynamoDB tables: ``users`` and
@@ -110,17 +110,17 @@ All you need to do is pass your app to the ``Dynamo`` constructor::
 
     app = Flask(__name__)
     app.config['DYNAMO_TABLES'] = [
-        {
+        dict(
              TableName='users',
              KeySchema=[dict(AttributeName='username', KeyType='HASH')],
              AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
              ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
-        }, {
+        ), dict(
              TableName='groups',
              KeySchema=[dict(AttributeName='name', KeyType='HASH')],
              AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
              ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
-        }
+        )
     ]
 
     dynamo = Dynamo(app)
@@ -135,17 +135,17 @@ If you use the app factory pattern then use::
     def create_app():
         app = Flask(__name__)
         app.config['DYNAMO_TABLES'] = [
-            {
+            dict(
                  TableName='users',
                  KeySchema=[dict(AttributeName='username', KeyType='HASH')],
                  AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
                  ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
-            }, {
+            ), dict(
                  TableName='groups',
                  KeySchema=[dict(AttributeName='name', KeyType='HASH')],
                  AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
                  ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
-            }
+            )
         ]
         dynamo = Dynamo()
         dynamo.init_app(app)
@@ -186,7 +186,7 @@ Below is an example view which creates a new user account::
 
     @app.route('/create_user')
     def create_user():
-        dynamo.tables['users'].put_item(data={
+        dynamo.tables['users'].put_item(Item={
             'username': 'rdegges',
             'first_name': 'Randall',
             'last_name': 'Degges',
