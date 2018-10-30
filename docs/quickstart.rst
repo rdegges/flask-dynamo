@@ -76,15 +76,15 @@ Below is an example::
     app = Flask(__name__)
     app.config['DYNAMO_TABLES'] = [
         {
-             TableName='users',
-             KeySchema=[dict(AttributeName='username', KeyType='HASH')],
-             AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
-             ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+             'TableName':'users',
+             'KeySchema':[dict(AttributeName='username', KeyType='HASH')],
+             'AttributeDefinitions':[dict(AttributeName='username', AttributeType='S')],
+             'ProvisionedThroughput':dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
         }, {
-             TableName='groups',
-             KeySchema=[dict(AttributeName='name', KeyType='HASH')],
-             AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
-             ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+             'TableName':'groups',
+             'KeySchema':[dict(AttributeName='name', KeyType='HASH')],
+             'AttributeDefinitions':[dict(AttributeName='name', AttributeType='S')],
+             'ProvisionedThroughput':dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
         }
      ]
 
@@ -111,15 +111,15 @@ All you need to do is pass your app to the ``Dynamo`` constructor::
     app = Flask(__name__)
     app.config['DYNAMO_TABLES'] = [
         {
-             TableName='users',
-             KeySchema=[dict(AttributeName='username', KeyType='HASH')],
-             AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
-             ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+             'TableName':'users',
+             'KeySchema':[dict(AttributeName='username', KeyType='HASH')],
+             'AttributeDefinitions':[dict(AttributeName='username', AttributeType='S')],
+             'ProvisionedThroughput':dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
         }, {
-             TableName='groups',
-             KeySchema=[dict(AttributeName='name', KeyType='HASH')],
-             AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
-             ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+             'TableName':'groups',
+             'KeySchema':[dict(AttributeName='name', KeyType='HASH')],
+             'AttributeDefinitions':[dict(AttributeName='name', AttributeType='S')],
+             'ProvisionedThroughput':dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
         }
     ]
 
@@ -136,15 +136,15 @@ If you use the app factory pattern then use::
         app = Flask(__name__)
         app.config['DYNAMO_TABLES'] = [
             {
-                 TableName='users',
-                 KeySchema=[dict(AttributeName='username', KeyType='HASH')],
-                 AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
-                 ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+                 'TableName':'users',
+                 'KeySchema':[dict(AttributeName='username', KeyType='HASH')],
+                 'AttributeDefinitions':[dict(AttributeName='username', AttributeType='S')],
+                 'ProvisionedThroughput':dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
             }, {
-                 TableName='groups',
-                 KeySchema=[dict(AttributeName='name', KeyType='HASH')],
-                 AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
-                 ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+                 'TableName':'groups',
+                 'KeySchema':[dict(AttributeName='name', KeyType='HASH')],
+                 'AttributeDefinitions':[dict(AttributeName='name', AttributeType='S')],
+                 'ProvisionedThroughput':dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
             }
         ]
         dynamo = Dynamo()
