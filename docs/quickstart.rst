@@ -260,12 +260,14 @@ variables, or via application configuration options directly, eg::
 
 No other code needs to be changed in order to use DynamoDB Local.
 
-.. note::
-    Some users report a credentials bug when running the DynamoDB Local:
-    In that case you need to set dummy AWS credentials like so in your environment:
-    ``AWS_ACCESS_KEY_ID=foobar``
-    ``AWS_DEFAULT_REGION=foobar``
-    ``AWS_SECRET_ACCESS_KEY=foobar``
+Note::
+
+Some users report a credentials bug when running the DynamoDB Local:
+In that case you need to set dummy AWS credentials like so in your environment:
+
+``AWS_ACCESS_KEY_ID=foobar``
+``AWS_DEFAULT_REGION=foobar``
+``AWS_SECRET_ACCESS_KEY=foobar``
 
 
 .. _pip: http://pip.readthedocs.org/en/latest/
