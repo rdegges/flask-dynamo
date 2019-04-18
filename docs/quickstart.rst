@@ -280,7 +280,7 @@ In that case you need to set dummy AWS credentials like so in your environment:
 
 Other CRUD functions
 --------------------
-Please refer to the _official AWS guide: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/dynamodb.html
+Please refer to the official AWS guide: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/dynamodb.html
 
 Specifying boto3 Session
 ------------------------
