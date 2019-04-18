@@ -75,18 +75,19 @@ Below is an example::
 
     app = Flask(__name__)
     app.config['DYNAMO_TABLES'] = [
-        {
-             TableName='users',
-             KeySchema=[dict(AttributeName='username', KeyType='HASH')],
-             AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
-             ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
-        }, {
-             TableName='groups',
-             KeySchema=[dict(AttributeName='name', KeyType='HASH')],
-             AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
-             ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
-        }
-     ]
+                dict(
+                     TableName='users',
+                     KeySchema=[dict(AttributeName='username', KeyType='HASH')],
+                     AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
+                     ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+                ),
+                dict(
+                     TableName='groups',
+                     KeySchema=[dict(AttributeName='name', KeyType='HASH')],
+                     AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
+                     ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+                )
+            ]
 
 In the above example, I'm defining two DynamoDB tables: ``users`` and
 ``groups``, along with their respective schemas.
@@ -110,18 +111,19 @@ All you need to do is pass your app to the ``Dynamo`` constructor::
 
     app = Flask(__name__)
     app.config['DYNAMO_TABLES'] = [
-        {
-             TableName='users',
-             KeySchema=[dict(AttributeName='username', KeyType='HASH')],
-             AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
-             ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
-        }, {
-             TableName='groups',
-             KeySchema=[dict(AttributeName='name', KeyType='HASH')],
-             AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
-             ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
-        }
-    ]
+                dict(
+                     TableName='users',
+                     KeySchema=[dict(AttributeName='username', KeyType='HASH')],
+                     AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
+                     ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+                ),
+                dict(
+                     TableName='groups',
+                     KeySchema=[dict(AttributeName='name', KeyType='HASH')],
+                     AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
+                     ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+                )
+            ]
 
     dynamo = Dynamo(app)
 
@@ -135,18 +137,19 @@ If you use the app factory pattern then use::
     def create_app():
         app = Flask(__name__)
         app.config['DYNAMO_TABLES'] = [
-            {
-                 TableName='users',
-                 KeySchema=[dict(AttributeName='username', KeyType='HASH')],
-                 AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
-                 ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
-            }, {
-                 TableName='groups',
-                 KeySchema=[dict(AttributeName='name', KeyType='HASH')],
-                 AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
-                 ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
-            }
-        ]
+                    dict(
+                         TableName='users',
+                         KeySchema=[dict(AttributeName='username', KeyType='HASH')],
+                         AttributeDefinitions=[dict(AttributeName='username', AttributeType='S')],
+                         ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+                    ),
+                    dict(
+                         TableName='groups',
+                         KeySchema=[dict(AttributeName='name', KeyType='HASH')],
+                         AttributeDefinitions=[dict(AttributeName='name', AttributeType='S')],
+                         ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5)
+                    )
+                ]
         dynamo = Dynamo()
         dynamo.init_app(app)
         return app
@@ -173,6 +176,14 @@ all of your predefined DynamoDB tables::
 
 This works great in bootstrap scripts.
 
+One example is this::
+
+    @app.route('/', methods=['GET'])
+    def hello_world():
+        with app.app_context():
+            dynamo.create_all()
+        return 'table created!'
+
 
 Working with Tables
 -------------------
@@ -186,12 +197,13 @@ Below is an example view which creates a new user account::
 
     @app.route('/create_user')
     def create_user():
-        dynamo.tables['users'].put_item(data={
+        dynamo.tables['users'].put_item(Item={
             'username': 'rdegges',
             'first_name': 'Randall',
             'last_name': 'Degges',
             'email': 'r@rdegges.com',
         })
+        return 'added a user'
 
 On a related note, you can also use the ``dynamo.tables`` dictionary to iterate
 through all of your tables (*this is sometimes useful*).  Here's how you could
@@ -247,6 +259,13 @@ variables, or via application configuration options directly, eg::
     app.config['DYNAMO_LOCAL_PORT'] = 8000
 
 No other code needs to be changed in order to use DynamoDB Local.
+
+.. note::
+    Some users report a credentials bug when running the DynamoDB Local:
+    In that case you need to set dummy AWS credentials like so in your environment:
+    ``AWS_ACCESS_KEY_ID=foobar``
+    ``AWS_DEFAULT_REGION=foobar``
+    ``AWS_SECRET_ACCESS_KEY=foobar``
 
 
 .. _pip: http://pip.readthedocs.org/en/latest/
