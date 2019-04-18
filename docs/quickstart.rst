@@ -260,12 +260,16 @@ variables, or via application configuration options directly, eg::
 
 No other code needs to be changed in order to use DynamoDB Local.
 
-.. note::
-    Some users report a credentials bug when running the DynamoDB Local:
-    In that case you need to set dummy AWS credentials like so in your environment:
-    ``AWS_ACCESS_KEY_ID=foobar``
-    ``AWS_DEFAULT_REGION=foobar``
-    ``AWS_SECRET_ACCESS_KEY=foobar``
+If you are using a docker, the ``DYNAMO_LOCAL_HOST`` refers to the name of your DynamoDB service.
+
+Note::
+
+Some users report a credentials bug when running the DynamoDB Local:
+In that case you need to set dummy AWS credentials like so in your environment:
+
+- ``AWS_ACCESS_KEY_ID=foobar``
+- ``AWS_DEFAULT_REGION=foobar``
+- ``AWS_SECRET_ACCESS_KEY=foobar``
 
 
 .. _pip: http://pip.readthedocs.org/en/latest/
@@ -274,6 +278,9 @@ No other code needs to be changed in order to use DynamoDB Local.
 .. _boto DynamoDB tutorial: http://boto3.readthedocs.io/en/latest/guide/dynamodb.html
 .. _DynamoDB Local documentation: http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Tools.DynamoDBLocal.html
 
+Other CRUD functions
+--------------------
+Please refer to the _official AWS guide: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/dynamodb.html
 
 Specifying boto3 Session
 ------------------------
