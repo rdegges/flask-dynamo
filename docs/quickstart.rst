@@ -155,7 +155,7 @@ If you use the app factory pattern then use::
 
 
 From this point on, you can interact with DynamoDB through the global ``dynamo``
-object, or through ``Flask.current_app.extensions['dynamodb']`` if you are
+object, or through ``Flask.current_app.extensions['dynamo']`` if you are
 using the Flask app factory pattern.
 
 
